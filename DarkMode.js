@@ -1,9 +1,9 @@
-const DarkSystemColor_ForDark_Dic = { //set for dark mode.
+const DarkSystemColor_Fordark_Dic = { //set for dark mode.
   "--text--color":"#fff",
   "--background-color":"black"
 };
 
-const DarkSystemColor_ForLight_Dic = { //set for light mode.
+const DarkSystemColor_Forlight_Dic = { //set for light mode.
     "--text--color":"black",
     "--background-color":"#fff"
 };
@@ -12,29 +12,52 @@ const DarkSystemColor_ForLight_Dic = { //set for light mode.
  /////  Only adjust the above. Do not modify the following code!!!   /////
 ////////////////////////////////////////////////////////////////////////
 
+var DarkSystemMode = getCookie('DarkSystemMode');
+
+DarkModeApply(DarkSystemMode);
+
+function DarkModeApply (ForMode) {
+  let colorDictionary;
+  switch (ForMode) {
+    case 'dark':
+      colorDictionary = DarkSystemColor_Fordark_Dic;
+      break;
+    case 'light':
+      colorDictionary = DarkSystemColor_Forlight_Dic;
+      break;
+    default:
+      console.error('Invalid mode:', ForMode);
+      return;
+  }
+
+  if (!colorDictionary) {
+    console.error('Color dictionary not found:', 'DarkSystemColor_For' + ForMode + '_Dic');
+    return;
+  }
+
+  Object.entries(colorDictionary).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(key, value);
+  });
+}
 
 function DarkModeSwitch () {
-    var DarkSystemMode = getCookie('DarkSystemMode')
+    const darkKeys = Object.keys(DarkSystemColor_Fordark_Dic);
+    const lightKeys = Object.keys(DarkSystemColor_Forlight_Dic);
 
-    const darkKeys = Object.keys(DarkSystemColor_ForDark_Dic);
-    const lightKeys = Object.keys(DarkSystemColor_ForLight_Dic);
+    DarkSystemMode = getCookie('DarkSystemMode');
 
     if (darkKeys.length !== lightKeys.length || !darkKeys.every(k => lightKeys.includes(k))) {
-      alert("Error. the ColorDic length is not the same.");
+      alert("Error. The ColorDic length is not the same or keys don't match.");
       return;
     }
 
-    if(DarkSystemMode == "light"){
+    if(DarkSystemMode == "light"){ //set for dark
       setCookie('DarkSystemMode','dark');
-      Object.entries(DarkSystemColor_ForDark_Dic).forEach(([key, value]) => {
-          document.documentElement.style.setProperty(key, value);
-      });
+      DarkModeApply('dark');
     }
-    else {
+    else { //set for light
       setCookie('DarkSystemMode', 'light');
-      Object.entries(DarkSystemColor_ForLight_Dic).forEach(([key, value]) => {
-          document.documentElement.style.setProperty(key, value);
-      });
+      DarkModeApply('light');
     }
 }
 
